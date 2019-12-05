@@ -1,10 +1,18 @@
 package com.example.api;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 
@@ -17,50 +25,66 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
 
+    EditText city, country;
+    TextView current,forecast1,forecast2,forecast3;
+
     Gson gson = new Gson();
-    String mainUrl = "https://api.weatherbit.io/v2.0/current?";
+    WeatherList object;
+    String mainUrl = "https://api.weatherbit.io/v2.0/";
     String apiKey = "&key=2bf859166968461192d0ac8475a4b806";
+    String params;
+    Boolean isCurrent = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //if (ContextCompat.checkSelfPermission( this,android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED )
-        //{
-        //    ActivityCompat.requestPermissions(
-        //            this,
-        //            new String [] { android.Manifest.permission.ACCESS_FINE_LOCATION },
-        //            1
-        //    );
-        //}
-        //LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        //Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        city = findViewById(R.id.city);
+        country = findViewById(R.id.country);
+        current = findViewById(R.id.current);
+        forecast1 = findViewById(R.id.forecast1);
+        forecast2 = findViewById(R.id.forecast2);
+        forecast3 = findViewById(R.id.forecast3);
+
+//        if (ContextCompat.checkSelfPermission( this,android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED )
+//        {
+//            ActivityCompat.requestPermissions(
+//                    this,
+//                    new String [] { android.Manifest.permission.ACCESS_FINE_LOCATION },
+//                    1
+//            );
+//        }
+//        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+//        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
     public void test(View view){
-        try{
-            httpGet();
-        }catch(Exception e){
-            System.out.println(e);
-        }
+
+        params = "current?city=" + city.getText().toString() + "&country=" + country.getText().toString();
+        getInformation();
+        params = "forecast/daily?city=" + city.getText().toString() + "&country=" + country.getText().toString();
+        getInformation();
     }
 
-    public void httpGet() {
-
+    public void getInformation() {
         AsyncTask async = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] objects) {
                 try {
-                    String apiUrl = mainUrl + "city_id=4487042" + apiKey;
+                    String apiUrl = mainUrl + params + apiKey;
+
                     URL url = new URL(apiUrl);
                     HttpsURLConnection httpConn = (HttpsURLConnection) url.openConnection();
                     httpConn.setRequestMethod("GET");
+
                     InputStream inputStream = httpConn.getInputStream();
                     InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+
                     BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                     String line = bufferedReader.readLine();
-                    WeatherList object = gson.fromJson(line, WeatherList.class);
+
+                    object = gson.fromJson(line, WeatherList.class);
                 }catch (Exception e){
                 }
                 return  null;
@@ -68,7 +92,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected void onPostExecute(Object o) {
-
+                if(object.data.size() == 1) {
+                    current.setText(object.data.get(0).weather.description);
+                }else{
+                    forecast1.setText(object.data.get(1).weather.description);
+                    forecast2.setText(object.data.get(2).weather.description);
+                    forecast3.setText(object.data.get(3).weather.description);
+                }
             }
         }.execute();
 
