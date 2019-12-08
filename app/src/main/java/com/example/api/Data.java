@@ -10,4 +10,5 @@ public class Data {
 
 class Weather {
     public String description;
+    public String icon;
 }
