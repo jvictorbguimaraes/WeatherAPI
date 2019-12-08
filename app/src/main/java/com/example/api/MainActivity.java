@@ -62,28 +62,18 @@ public class MainActivity extends AppCompatActivity {
     public void test(View view){
 
         params = "current?city=" + city.getText().toString() + "&country=" + country.getText().toString();
-        getInformation();
+        getCurrentWeather();
         params = "forecast/daily?city=" + city.getText().toString() + "&country=" + country.getText().toString();
-        getInformation();
+        getForecast();
     }
 
-    public void getInformation() {
+    public void getCurrentWeather() {
         AsyncTask async = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] objects) {
                 try {
                     String apiUrl = mainUrl + params + apiKey;
-
-                    URL url = new URL(apiUrl);
-                    HttpsURLConnection httpConn = (HttpsURLConnection) url.openConnection();
-                    httpConn.setRequestMethod("GET");
-
-                    InputStream inputStream = httpConn.getInputStream();
-                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-
-                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                    String line = bufferedReader.readLine();
-
+                    String line = httpGet(apiUrl);
                     object = gson.fromJson(line, WeatherList.class);
                 }catch (Exception e){
                 }
@@ -92,15 +82,47 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected void onPostExecute(Object o) {
-                if(object.data.size() == 1) {
-                    current.setText(object.data.get(0).weather.description);
-                }else{
-                    forecast1.setText(object.data.get(1).weather.description);
-                    forecast2.setText(object.data.get(2).weather.description);
-                    forecast3.setText(object.data.get(3).weather.description);
-                }
+                current.setText(object.data.get(0).weather.description);
             }
         }.execute();
+    }
 
+    public void getForecast() {
+        AsyncTask async = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                try {
+                    String apiUrl = mainUrl + params + apiKey;
+                    String line = httpGet(apiUrl);
+                    object = gson.fromJson(line, WeatherList.class);
+                }catch (Exception e){
+                }
+                return  null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                forecast1.setText(object.data.get(1).weather.description);
+                forecast2.setText(object.data.get(2).weather.description);
+                forecast3.setText(object.data.get(3).weather.description);
+            }
+        }.execute();
+    }
+
+    public String httpGet(String getUrl){
+        try {
+            URL url = new URL(getUrl);
+            HttpsURLConnection httpConn = (HttpsURLConnection) url.openConnection();
+            httpConn.setRequestMethod("GET");
+
+            InputStream inputStream = httpConn.getInputStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            return bufferedReader.readLine();
+        }catch (Exception ex){
+
+        }
+        return null;
     }
 }
