@@ -28,6 +28,7 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 import com.squareup.picasso.Picasso;
 
+
 public class MainActivity extends AppCompatActivity {
 
     ImageView currentImage, imageForecast1, imageForecast2, imageForecast3;
@@ -54,9 +55,9 @@ public class MainActivity extends AppCompatActivity {
         forecast3 = findViewById(R.id.forecast3);
         currentImage = findViewById(R.id.image);
 
-        //imageForecast1 = findViewById(R.id.imageForecast1);
-        //imageForecast2 = findViewById(R.id.imageForecast2);
-        //imageForecast3 = findViewById(R.id.imageForecast3);
+        imageForecast1 = findViewById(R.id.imageForecast1);
+        imageForecast2 = findViewById(R.id.imageForecast2);
+        imageForecast3 = findViewById(R.id.imageForecast3);
 
 //        if (ContextCompat.checkSelfPermission( this,android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED )
 //        {
@@ -125,13 +126,13 @@ public class MainActivity extends AppCompatActivity {
                 if(object != null) {
                     forecast1.setText(object.data.get(1).weather.description);
                     //temp1.setText(object.data.get(1).temp + "°");
-                    //Picasso.get().load(iconUrl + object.data.get(1).weather.icon + ".png").into(imageForecast1);
+                    Picasso.get().load(iconUrl + object.data.get(1).weather.icon + ".png").into(imageForecast1);
                     forecast2.setText(object.data.get(2).weather.description);
                     //temp2.setText(object.data.get(2).temp + "°");
-                    //Picasso.get().load(iconUrl + object.data.get(2).weather.icon + ".png").into(imageForecast2);
+                    Picasso.get().load(iconUrl + object.data.get(2).weather.icon + ".png").into(imageForecast2);
                     forecast3.setText(object.data.get(3).weather.description);
                     //temp3.setText(object.data.get(3).temp + "°");
-                    //Picasso.get().load(iconUrl + object.data.get(3).weather.icon + ".png").into(imageForecast3);
+                    Picasso.get().load(iconUrl + object.data.get(3).weather.icon + ".png").into(imageForecast3);
                 }else{
                     Toast.makeText(getApplicationContext(), "City not found",Toast.LENGTH_LONG);
                 }
